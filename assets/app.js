@@ -503,7 +503,14 @@ function mkTable(id,cols) {
 
 function onSearch(id,val){if(!filterState[id])filterState[id]={q:'',filter:'all'};filterState[id].q=val;showPanel(activePanel);}
 function onFilter(id,val){if(!filterState[id])filterState[id]={q:'',filter:'all'};filterState[id].filter=val;showPanel(activePanel);}
-function onSort(id,col){if(!sortState[id])sortState[id]={col:null,asc:true};sortState[id].asc=sortState[id].col===col?!sortState[id].asc:true;sortState[id].col=col;showPanel(activePanel);}
+function onSort(id,col){
+  console.log('[SORT] Clicked column:', col, 'in panel:', id);
+  if(!sortState[id])sortState[id]={col:null,asc:true};
+  sortState[id].asc=sortState[id].col===col?!sortState[id].asc:true;
+  sortState[id].col=col;
+  console.log('[SORT] New sort state:', sortState[id]);
+  showPanel(activePanel);
+}
 
 function renderTable(id,cols,allRows) {
   const fs=filterState[id]||{q:'',filter:'all'};
@@ -516,20 +523,65 @@ function renderTable(id,cols,allRows) {
     try{if(r.schemeCode)return calcMF(r).gl<0;if(r.symbol&&r.avgPrice)return calcStock(r).gl<0;if(r.symbol)return calcGold(r).gl<0;return calcFD(r).gl<0;}catch{return true;}
   });
   const ss=sortState[id];
-  if(ss?.col&&!ss.col.startsWith('_')) rows.sort((a,b)=>{
-    const va=a[ss.col],vb=b[ss.col];
-    // Convert to numbers if possible
-    const numA = parseFloat(va);
-    const numB = parseFloat(vb);
-    const isNumeric = !isNaN(numA) && !isNaN(numB);
-    
-    if(isNumeric) {
-      return ss.asc ? numA - numB : numB - numA;
-    } else if(typeof va==='string') {
-      return ss.asc ? va.localeCompare(vb) : vb.localeCompare(va);
-    }
-    return ss.asc ? (va||0)-(vb||0) : (vb||0)-(va||0);
-  });
+  console.log("[RENDER] Sorting with state:", ss);
+  if(ss?.col) {
+    rows.sort((a,b)=>{
+      let va, vb;
+      
+      // For calculated columns (starting with _), compute the value
+      if(ss.col.startsWith('_')) {
+        // Map column key to actual calculated value
+        const getCalcValue = (row, col) => {
+          try {
+            if(row.schemeCode) { // Mutual Fund
+              const c = calcMF(row);
+              if(col === '_curNAV') return c.curNAV;
+              if(col === '_curVal') return c.curVal;
+              if(col === '_gl') return c.gl;
+              if(col === '_ret') return c.ret;
+            } else if(row.symbol && row.avgPrice) { // Stock
+              const c = calcStock(row);
+              if(col === '_liveP') return c.curPrice;
+              if(col === '_curVal') return c.curVal;
+              if(col === '_gl') return c.gl;
+              if(col === '_ret') return c.ret;
+            } else if(row.symbol) { // Gold
+              const c = calcGold(row);
+              if(col === '_liveP') return c.curPrice;
+              if(col === '_curVal') return c.curVal;
+              if(col === '_gl') return c.gl;
+              if(col === '_ret') return c.ret;
+            } else if(row.maturityDate) { // FD
+              const c = calcFD(row);
+              if(col === '_daysLeft') return c.daysLeft;
+              if(col === '_curVal') return c.curVal;
+              if(col === '_gl') return c.gl;
+              if(col === '_ret') return c.ret;
+            }
+          } catch(e) { return 0; }
+          return 0;
+        };
+        va = getCalcValue(a, ss.col);
+        vb = getCalcValue(b, ss.col);
+      } else {
+        // For regular columns, use the raw value
+        va = a[ss.col];
+        vb = b[ss.col];
+      }
+      
+      // Convert to numbers if possible
+      const numA = parseFloat(va);
+      const numB = parseFloat(vb);
+      const isNumeric = !isNaN(numA) && !isNaN(numB);
+      
+      if(isNumeric) {
+        return ss.asc ? numA - numB : numB - numA;
+      } else if(typeof va === 'string' && typeof vb === 'string') {
+        return ss.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+      }
+      return ss.asc ? (va||0)-(vb||0) : (vb||0)-(va||0);
+    });
+  }
   document.querySelectorAll(`#th-${id} th`).forEach(th=>{
     th.classList.remove('sorted');const si=th.querySelector('.sort-icon');if(si)si.textContent='⇅';
     if(ss?.col&&th.dataset.col===ss.col){th.classList.add('sorted');if(si)si.textContent=ss.asc?'▲':'▼';}
