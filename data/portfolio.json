@@ -16,14 +16,14 @@
         "returnPct": 16.45
       },
       {
-        "assetClass": "Mutual Funds - Wealth Elite",
+        "assetClass": "Wealth Elite Portfolio",
         "invested": 2703993.64,
         "currentValue": 2901611.2,
         "gainLoss": 197617.56,
         "returnPct": 7.31
       },
       {
-        "assetClass": "Mutual Funds - Personal",
+        "assetClass": "Personal Portfolio",
         "invested": 708623.98,
         "currentValue": 831088.1,
         "gainLoss": 122464.12,
@@ -121,7 +121,7 @@
       "status": "Active"
     }
   ],
-  "mutualFunds": [
+  "Wealth Elite Portfolio": [
     {
       "name": "Bandhan Multi Factor Fund",
       "schemeCode": "153721",
@@ -339,7 +339,7 @@
       "returnPct": 10.9926
     },
   ]
-    Self MF Portfolio[
+    Personal Portfolio[
     {
       "name": "Axis Global Equity Alpha FOF-Regular-Growth",
       "schemeCode": "148485",
