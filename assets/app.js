@@ -254,6 +254,17 @@ function showPanel(id) {
   activePanel=id;
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const nb=document.getElementById('nav-'+id); if(nb) nb.classList.add('active');
+  
+  // Show/hide summary cards - only show on dashboard
+  const summarySection = document.querySelector('.section-title');
+  const summaryGrid = document.getElementById('summaryGrid');
+  if (id === 'dashboard') {
+    if (summarySection) summarySection.style.display = 'block';
+    if (summaryGrid) summaryGrid.style.display = 'grid';
+  } else {
+    if (summarySection) summarySection.style.display = 'none';
+    if (summaryGrid) summaryGrid.style.display = 'none';
+  }
   Object.keys(chartStore).forEach(k=>{try{chartStore[k].destroy();}catch(e){}});
   chartStore={};
   const mc=document.getElementById('mainContent');
@@ -507,8 +518,17 @@ function renderTable(id,cols,allRows) {
   const ss=sortState[id];
   if(ss?.col&&!ss.col.startsWith('_')) rows.sort((a,b)=>{
     const va=a[ss.col],vb=b[ss.col];
-    if(typeof va==='string')return ss.asc?va.localeCompare(vb):vb.localeCompare(va);
-    return ss.asc?(va||0)-(vb||0):(vb||0)-(va||0);
+    // Convert to numbers if possible
+    const numA = parseFloat(va);
+    const numB = parseFloat(vb);
+    const isNumeric = !isNaN(numA) && !isNaN(numB);
+    
+    if(isNumeric) {
+      return ss.asc ? numA - numB : numB - numA;
+    } else if(typeof va==='string') {
+      return ss.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    }
+    return ss.asc ? (va||0)-(vb||0) : (vb||0)-(va||0);
   });
   document.querySelectorAll(`#th-${id} th`).forEach(th=>{
     th.classList.remove('sorted');const si=th.querySelector('.sort-icon');if(si)si.textContent='⇅';
