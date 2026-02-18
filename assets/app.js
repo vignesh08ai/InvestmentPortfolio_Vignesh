@@ -329,7 +329,7 @@ function buildFDPanel(el) {
     {key:'status',      label:'Status',        fn:v=>`<span class="chip active">${v}</span>`},
     {key:'_actions',    label:'Actions',       fn:(_,r,i)=>rowActions('fd',i)},
   ];
-  el.innerHTML=mkControls(id,false,'fd')+mkTable(id,cols);
+  el.innerHTML=mkControls(id,false,'fd')+mkTable(id,cols);console.log("[DEBUG] FD controls rendered");
   renderTable(id,cols,PORTFOLIO.fixedDeposits);
 }
 
@@ -353,7 +353,7 @@ function buildMFPanel(el,owner) {
     {key:'_actions',   label:'Actions',       fn:(_,r,i)=>rowActions('mf',PORTFOLIO.mutualFunds.indexOf(r))},
   ];
   const rows=PORTFOLIO.mutualFunds.filter(m=>m.owner===owner);
-  el.innerHTML=mkControls(id,true,'mf',owner)+mkTable(id,cols);
+  el.innerHTML=mkControls(id,true,'mf',owner)+mkTable(id,cols);console.log("[DEBUG] MF controls rendered");
   renderTable(id,cols,rows);
 }
 
@@ -467,8 +467,8 @@ function mkControls(id,hasFilter,addType,addMeta) {
   return `
   <div class="export-bar">
     <span>⚠️ <strong>Changes are saved in your browser.</strong> Export JSON to update your GitHub file.</span>
-    <button class="btn-export" onclick="syncToGitHub()" style="margin-right:8px">☁️ Sync to GitHub</button>
-    <button class="btn-export" onclick="exportJSON()" style="background:#64748b">⬇ Download JSON</button>
+    <button onclick="syncToGitHub()" style="margin-right:12px;padding:10px 20px;background:#059669;color:#fff;border:2px solid #047857;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">SYNC TO GITHUB</button>
+    <button onclick="exportJSON()" style="padding:10px 20px;background:#64748b;color:#fff;border:2px solid #475569;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">DOWNLOAD JSON</button>
   </div>
   <div class="ctrl-bar">
     <div class="search-wrap">
@@ -663,7 +663,7 @@ function exportJSON() {
 async function syncToGitHub() {
   let token = localStorage.getItem(GITHUB_TOKEN_KEY);
   if (!token) {
-    token = prompt("🔑 GitHub Token:\n\nGenerate at: https://github.com/settings/tokens\nScope: repo");
+    token = prompt("GitHub Personal Access Token:\n\nGenerate at: https://github.com/settings/tokens\nScope: repo");
     if (!token) { showToast("❌ Cancelled", "error"); return; }
     localStorage.setItem(GITHUB_TOKEN_KEY, token);
   }
