@@ -18,6 +18,9 @@ const AMFI = 'https://www.amfiindia.com/spages/NAVAll.txt';
 const YF   = 'https://query1.finance.yahoo.com/v8/finance/chart/';
 
 const STORAGE_KEY = 'portfolio_data_v1';
+const GITHUB_TOKEN_KEY = 'github_token';
+const GITHUB_REPO = 'vignesh08ai/InvestmentPortfolio_Vignesh';
+const GITHUB_FILE_PATH = 'data/portfolio.json';
 
 /* ═══════════════════════════════════════════════════════
    BOOT
@@ -464,7 +467,8 @@ function mkControls(id,hasFilter,addType,addMeta) {
   return `
   <div class="export-bar">
     <span>⚠️ <strong>Changes are saved in your browser.</strong> Export JSON to update your GitHub file.</span>
-    <button class="btn-export" onclick="exportJSON()">⬇ Export portfolio.json</button>
+    <button class="btn-export" onclick="syncToGitHub()" style="margin-right:8px">☁️ Sync to GitHub</button>
+    <button class="btn-export" onclick="exportJSON()" style="background:#64748b">⬇ Download JSON</button>
   </div>
   <div class="ctrl-bar">
     <div class="search-wrap">
@@ -652,6 +656,37 @@ function exportJSON() {
   a.click();
   showToast('📥 portfolio.json downloaded — upload to GitHub data/ folder','info');
 }
+
+/* ═══════════════════════════════════════════════════════
+   SYNC TO GITHUB
+═══════════════════════════════════════════════════════ */
+async function syncToGitHub() {
+  let token = localStorage.getItem(GITHUB_TOKEN_KEY);
+  if (!token) {
+    token = prompt("🔑 GitHub Token:\n\nGenerate at: https://github.com/settings/tokens\nScope: repo");
+    if (!token) { showToast("❌ Cancelled", "error"); return; }
+    localStorage.setItem(GITHUB_TOKEN_KEY, token);
+  }
+  showSpinner("Syncing...");
+  try {
+    const getUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+    const getResp = await fetch(getUrl, { headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }});
+    if (!getResp.ok) throw new Error(`API error: ${getResp.status}`);
+    const fileData = await getResp.json();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(PORTFOLIO, null, 2))));
+    const updateResp = await fetch(getUrl, {
+      method: "PUT",
+      headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+      body: JSON.stringify({ message: `Update ${new Date().toISOString()}`, content, sha: fileData.sha })
+    });
+    if (!updateResp.ok) throw new Error("Update failed");
+    hideSpinner(); showToast("✅ Synced!", "success");
+  } catch (e) {
+    hideSpinner(); showToast(`❌ ${e.message}`, "error");
+    if (e.message.includes("401")) localStorage.removeItem(GITHUB_TOKEN_KEY);
+  }
+}
+
 
 /* ═══════════════════════════════════════════════════════
    MODAL HELPERS
