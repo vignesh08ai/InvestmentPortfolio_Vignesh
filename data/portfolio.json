@@ -16,21 +16,21 @@
         "returnPct": 16.45
       },
       {
-        "assetClass": "Mutual Funds - Mahesh",
+        "assetClass": "Mutual Funds - Wealth Elite",
         "invested": 2703993.64,
         "currentValue": 2901611.2,
         "gainLoss": 197617.56,
         "returnPct": 7.31
       },
       {
-        "assetClass": "Mutual Funds - Family",
+        "assetClass": "Mutual Funds - Personal",
         "invested": 708623.98,
         "currentValue": 831088.1,
         "gainLoss": 122464.12,
         "returnPct": 17.28
       },
       {
-        "assetClass": "Direct Equities",
+        "assetClass": "Indian Equities",
         "invested": 203722.22,
         "currentValue": 256611.02,
         "gainLoss": 52888.8,
@@ -125,7 +125,7 @@
     {
       "name": "Bandhan Multi Factor Fund",
       "schemeCode": "153721",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 950.7,
       "purchaseNAV": 10.518,
       "invested": 9999.4626,
@@ -137,7 +137,7 @@
     {
       "name": "ICICI Prudential Business Cycle Fund-Growth",
       "schemeCode": "148653",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 16634.38,
       "purchaseNAV": 21.731,
       "invested": 361481.7118,
@@ -149,7 +149,7 @@
     {
       "name": "ICICI Prudential Manufacturing Fund-Growth",
       "schemeCode": "145077",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 3328.21,
       "purchaseNAV": 34.251,
       "invested": 113994.5207,
@@ -161,7 +161,7 @@
     {
       "name": "Invesco India Mid cap fund",
       "schemeCode": "105503",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 207.95,
       "purchaseNAV": 180.3246,
       "invested": 37498.5006,
@@ -173,7 +173,7 @@
     {
       "name": "Nippon India Power and Infra Fund Growth (SIP)",
       "schemeCode": "101262",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 333.93,
       "purchaseNAV": 341.3678,
       "invested": 113992.9495,
@@ -185,7 +185,7 @@
     {
       "name": "Nippon India Small Cap Fund Growth (SIP)",
       "schemeCode": "113177",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 2071.45,
       "purchaseNAV": 153.8697,
       "invested": 318733.3901,
@@ -197,7 +197,7 @@
     {
       "name": "Quant Mid Cap Fund Growth ",
       "schemeCode": "101065",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 1574.5,
       "purchaseNAV": 210.0566,
       "invested": 330734.1167,
@@ -209,7 +209,7 @@
     {
       "name": "SBI Large & Midcap-Direct-Div",
       "schemeCode": "103024",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 539.8,
       "purchaseNAV": 555.7336,
       "invested": 299984.9973,
@@ -221,7 +221,7 @@
     {
       "name": "Tata Banking and Financial Services Fund Growth (SIP)",
       "schemeCode": "135794",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 1184.98,
       "purchaseNAV": 37.9736,
       "invested": 44997.9565,
@@ -233,7 +233,7 @@
     {
       "name": "Tata Digital India Fund Growth (SIP)",
       "schemeCode": "135797",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 1682.75,
       "purchaseNAV": 44.5678,
       "invested": 74996.4655,
@@ -245,7 +245,7 @@
     {
       "name": "Tata India Consumer Fund Growth",
       "schemeCode": "135804",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 2513.78,
       "purchaseNAV": 42.3645,
       "invested": 106495.0328,
@@ -257,7 +257,7 @@
     {
       "name": "Tata India Pharma and Healthcare Fund Growth",
       "schemeCode": "135812",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 3742.37,
       "purchaseNAV": 28.4565,
       "invested": 106494.7519,
@@ -269,7 +269,7 @@
     {
       "name": "Tata Infrastructure Fund Growth (SIP)",
       "schemeCode": "101766",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 278.22,
       "purchaseNAV": 161.7379,
       "invested": 44998.7185,
@@ -281,7 +281,7 @@
     {
       "name": "Tata Resources and Energy Fund Growth (SIP)",
       "schemeCode": "135815",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 1107.77,
       "purchaseNAV": 40.6201,
       "invested": 44997.7282,
@@ -293,7 +293,7 @@
     {
       "name": "ICICI Prudential Manufacturing Fund-Growth",
       "schemeCode": "145077",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 6192.62,
       "purchaseNAV": 32,
       "invested": 198163.84,
@@ -305,7 +305,7 @@
     {
       "name": "Mahindra Manulife Mid Cap Fund - Regular Plan - Growth",
       "schemeCode": "142109",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 3526.92,
       "purchaseNAV": 32.2499,
       "invested": 113742.8173,
@@ -317,7 +317,7 @@
     {
       "name": "Nippon India Multi Asset Allocation Fund - Regular - Growth",
       "schemeCode": "148459",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 7890.2,
       "purchaseNAV": 24.0793,
       "invested": 189990.4929,
@@ -329,7 +329,7 @@
     {
       "name": "Quant Flexi Cap Fund-Regular Plan-Growth Option",
       "schemeCode": "109830",
-      "owner": "Mahesh",
+      "owner": "Wealth Elite",
       "units": 2221.42,
       "purchaseNAV": 86.7446,
       "invested": 192696.1893,
@@ -338,6 +338,8 @@
       "gainLoss": 21182.2507,
       "returnPct": 10.9926
     },
+  ]
+    Self MF Portfolio[
     {
       "name": "Axis Global Equity Alpha FOF-Regular-Growth",
       "schemeCode": "148485",
@@ -529,7 +531,7 @@
       "returnPct": 0.5317
     }
   ],
-  "stocks": [
+  "Indian Equities": [
     {
       "name": "AMARA RAJA ENERGY & MOBILITY LIMITED",
       "symbol": "ARE&M.NS",
