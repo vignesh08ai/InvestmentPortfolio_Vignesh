@@ -21,6 +21,7 @@ const STORAGE_KEY = 'portfolio_data_v1';
 const GITHUB_TOKEN_KEY = 'github_token';
 const GITHUB_REPO = 'vignesh08ai/InvestmentPortfolio_Vignesh';
 const GITHUB_FILE_PATH = 'data/portfolio.json';
+const COLUMN_VISIBILITY_KEY = 'column_visibility_v1';
 
 /* ═══════════════════════════════════════════════════════
    BOOT
@@ -340,8 +341,9 @@ function buildFDPanel(el) {
     {key:'status',      label:'Status',        fn:v=>`<span class="chip active">${v}</span>`},
     {key:'_actions',    label:'Actions',       fn:(_,r,i)=>rowActions('fd',i)},
   ];
-  el.innerHTML=mkControls(id,false,'fd')+mkTable(id,cols);console.log("[DEBUG] FD controls rendered");
-  renderTable(id,cols,PORTFOLIO.fixedDeposits);
+  const visibleCols = filterVisibleColumns(id, cols);
+  el.innerHTML=mkControls(id,false,'fd','',cols)+mkTable(id,visibleCols);console.log("[DEBUG] FD controls rendered");
+  renderTable(id,visibleCols,PORTFOLIO.fixedDeposits);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -364,8 +366,9 @@ function buildMFPanel(el,owner) {
     {key:'_actions',   label:'Actions',       fn:(_,r,i)=>rowActions('mf',PORTFOLIO.mutualFunds.indexOf(r))},
   ];
   const rows=PORTFOLIO.mutualFunds.filter(m=>m.owner===owner);
-  el.innerHTML=mkControls(id,true,'mf',owner)+mkTable(id,cols);console.log("[DEBUG] MF controls rendered");
-  renderTable(id,cols,rows);
+  const visibleCols = filterVisibleColumns(id, cols);
+  el.innerHTML=mkControls(id,true,'mf',owner,cols)+mkTable(id,visibleCols);console.log("[DEBUG] MF controls rendered");
+  renderTable(id,visibleCols,rows);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -405,8 +408,9 @@ function buildStocksPanel(el,exchange) {
   const cols = [...baseCols, ...usdInrCol, ...liveCols];
   const rows = PORTFOLIO.stocks.filter(s=>isUS ? s.exchange==='NASDAQ' : s.exchange!=='NASDAQ');
 
-  el.innerHTML = mkControls(id,true,'stock',exchange) + mkTable(id,cols);
-  renderTable(id,cols,rows);
+  const visibleCols = filterVisibleColumns(id, cols);
+  el.innerHTML = mkControls(id,true,'stock',exchange,cols) + mkTable(id,visibleCols);
+  renderTable(id,visibleCols,rows);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -441,8 +445,9 @@ function buildGoldPanel(el) {
     {key:'_actions',     label:'Actions',     fn:(_,r,i)=>rowActions('gold',PORTFOLIO.gold.indexOf(r))},
   ];
   const rows=PORTFOLIO.gold||[];
-  el.innerHTML=mkControls(id,false,'gold')+mkTable(id,cols);
-  renderTable(id,cols,rows);
+  const visibleCols = filterVisibleColumns(id, cols);
+  el.innerHTML=mkControls(id,false,'gold','',cols)+mkTable(id,visibleCols);
+  renderTable(id,visibleCols,rows);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -464,6 +469,76 @@ function updateGoldManualValue(idx, value) {
   showToast('✓ Gold value updated', 'success');
 }
 
+
+/* ═══════════════════════════════════════════════════════
+   COLUMN VISIBILITY
+═══════════════════════════════════════════════════════ */
+function getColumnVisibility(panelId) {
+  const stored = localStorage.getItem(COLUMN_VISIBILITY_KEY);
+  const all = stored ? JSON.parse(stored) : {};
+  return all[panelId] || {};
+}
+
+function setColumnVisibility(panelId, colKey, visible) {
+  const stored = localStorage.getItem(COLUMN_VISIBILITY_KEY);
+  const all = stored ? JSON.parse(stored) : {};
+  if (!all[panelId]) all[panelId] = {};
+  all[panelId][colKey] = visible;
+  localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(all));
+  showPanel(activePanel); // Refresh panel
+}
+
+function filterVisibleColumns(panelId, cols) {
+  const visibility = getColumnVisibility(panelId);
+  return cols.filter(col => {
+    // Always show actions column
+    if (col.key === '_actions') return true;
+    // If no stored preference, show by default
+    if (visibility[col.key] === undefined) return true;
+    return visibility[col.key];
+  });
+}
+
+function buildColumnToggle(panelId, cols) {
+  const visibility = getColumnVisibility(panelId);
+  return `
+    <div class="column-toggle">
+      <button class="toggle-btn" onclick="toggleColumnMenu('${panelId}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+        Show/Hide Columns
+      </button>
+      <div class="column-menu" id="colMenu-${panelId}" style="display:none">
+        <div class="column-menu-title">Visible Columns</div>
+        ${cols.filter(c => c.key !== '_actions').map(col => {
+          const isVisible = visibility[col.key] === undefined ? true : visibility[col.key];
+          return `
+            <label class="column-checkbox">
+              <input type="checkbox" 
+                ${isVisible ? 'checked' : ''} 
+                onchange="setColumnVisibility('${panelId}','${col.key}',this.checked)">
+              <span>${col.label}</span>
+            </label>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function toggleColumnMenu(panelId) {
+  const menu = document.getElementById('colMenu-' + panelId);
+  if (menu) {
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// Close column menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.column-toggle')) {
+    document.querySelectorAll('.column-menu').forEach(m => m.style.display = 'none');
+  }
+});
+
 /* ═══════════════════════════════════════════════════════
    TABLE HELPERS
 ═══════════════════════════════════════════════════════ */
@@ -474,7 +549,7 @@ function rowActions(type,idx) {
   </div>`;
 }
 
-function mkControls(id,hasFilter,addType,addMeta) {
+function mkControls(id,hasFilter,addType,addMeta,cols) {
   return `
   <div class="export-bar">
     <span>⚠️ <strong>Changes are saved in your browser.</strong> Export JSON to update your GitHub file.</span>
@@ -482,6 +557,7 @@ function mkControls(id,hasFilter,addType,addMeta) {
     <button onclick="exportJSON()" style="padding:10px 20px;background:#64748b;color:#fff;border:2px solid #475569;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">DOWNLOAD JSON</button>
   </div>
   <div class="ctrl-bar">
+    <div class="ctrl-bar-left">
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" class="search-input" placeholder="Search…" oninput="onSearch('${id}',this.value)"/>
@@ -490,7 +566,9 @@ function mkControls(id,hasFilter,addType,addMeta) {
       <option value="all">All</option><option value="gain">Gains Only</option><option value="loss">Losses Only</option>
     </select>`:''}
     <div class="row-count" id="rc-${id}">—</div>
+    </div>
     <button class="btn-add" onclick="openAddModal('${addType}','${addMeta||''}')">＋ Add ${addType==='mf'?'Fund':addType==='fd'?'FD':addType==='stock'?'Stock':'Gold'}</button>
+    ${cols ? buildColumnToggle(id, cols) : ''}
   </div>`;
 }
 
