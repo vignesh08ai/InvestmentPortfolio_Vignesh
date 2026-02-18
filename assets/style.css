@@ -607,3 +607,9 @@ td { padding: 12px 14px; vertical-align: middle; }
   transition: background .2s; white-space: nowrap;
 }
 .btn-export:hover { background: #b45309; }
+
+/* Hide summary cards by default - JavaScript will show on dashboard */
+.section-title,
+.sum-grid {
+  display: none;
+}
