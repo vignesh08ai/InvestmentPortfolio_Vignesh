@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Vignesh — Live Investment Portfolio Dashboard"/>
+  <title>Investments - Vignesh</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       MODERN DARK THEME - Enhanced Design
+       ══════════════════════════════════════════════════════════════ */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #151b3d;
+      --bg-card: #1a2142;
+      --bg-card-hover: #1f2654;
+      --accent-primary: #3b82f6;
+      --accent-secondary: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-danger: #ef4444;
+      --accent-warning: #f59e0b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --border-color: #2d3a5f;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SPINNER OVERLAY ── */
+    .spinner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .spinner-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(59, 130, 246, 0.2);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .spinner-text {
+      margin-top: 20px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      z-index: 10000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      max-width: 350px;
+      font-size: 0.95rem;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      background: rgba(26, 33, 66, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-sub {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-success);
+      box-shadow: 0 0 10px var(--accent-success);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .last-updated {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .refresh-btn svg {
+      transition: transform 0.3s ease;
+    }
+
+    .refresh-btn:hover svg {
+      transform: rotate(180deg);
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      padding: 25px 15px;
+      overflow-y: auto;
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .nav-item {
+      padding: 12px 16px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: var(--text-primary);
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── SUMMARY CARDS ── */
+    .sum-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .sum-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sum-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sum-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-primary);
+    }
+
+    .sum-card:hover::before {
+      opacity: 1;
+    }
+
+    .sum-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .sum-card-title {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sum-card-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .icon-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-primary); }
+    .icon-purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-secondary); }
+    .icon-green { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
+    .icon-red { background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); }
+    .icon-yellow { background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); }
+
+    .sum-card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .sum-card-change {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .positive { color: var(--accent-success); }
+    .negative { color: var(--accent-danger); }
+
+    /* ── PANELS ── */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── CHART CONTAINER ── */
+    .chart-container {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 30px;
+    }
+
+    .chart-header {
+      margin-bottom: 25px;
+    }
+
+    .chart-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chart-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      height: 400px;
+    }
+
+    /* ── TABLE ── */
+    .table-container {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-color);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    tbody tr {
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-success);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-danger);
+    }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 85vh;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-backdrop.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 25px 30px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-danger);
+    }
+
+    .modal-body {
+      padding: 30px;
+      max-height: calc(85vh - 160px);
+      overflow-y: auto;
+    }
+
+    .modal-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    .modal-footer {
+      padding: 20px 30px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background: rgba(59, 130, 246, 0.03);
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 80px;
+        z-index: 99;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.mobile-open {
+        left: 0;
+      }
+
+      .sum-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 15px 20px;
+      }
+
+      .brand-name {
+        font-size: 1.2rem;
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .sum-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-wrapper {
+        height: 300px;
+      }
+
+      .refresh-btn span {
+        display: none;
+      }
+    }
+  </style>
+  
+  <!-- Keep your original external stylesheet if it has additional styles -->
+  <link rel="stylesheet" href="./assets/style.css"/>
+</head>
+<body>
+
+<!-- ── SPINNER OVERLAY ── -->
+<div class="spinner-overlay" id="spinnerOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-text" id="spinnerText">Loading…</div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── TOP BAR ── -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">💼</div>
+    <div>
+      <div class="brand-name">Investments - Vignesh</div>
+      <div class="brand-sub">Live Investment Dashboard</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="status-dot" id="statusDot"></span>
+    <span class="last-updated" id="lastUpdated">Fetching…</span>
+    <button class="refresh-btn" id="refreshBtn" onclick="handleRefresh()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      <span>Refresh Prices</span>
+    </button>
+  </div>
+</header>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sideNav">
+    <div style="padding:16px 10px;color:#94a3b8;font-size:13px">Loading…</div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- SUMMARY CARDS -->
+    <div class="section-title">Portfolio <span>Overview</span></div>
+    <div class="sum-grid" id="summaryGrid"></div>
+
+    <!-- PANELS -->
+    <div id="mainContent">
+
+      <!-- DASHBOARD (default) -->
+      <div class="panel active" id="panel-dashboard"></div>
+
+      <!-- FD -->
+      <div class="panel" id="panel-fd"></div>
+
+      <!-- MF Mahesh -->
+      <div class="panel" id="panel-mf-mahesh"></div>
+
+      <!-- MF Family -->
+      <div class="panel" id="panel-mf-family"></div>
+
+      <!-- Stocks NSE/BSE -->
+      <div class="panel" id="panel-stocks-nse"></div>
+
+      <!-- Stocks NASDAQ -->
+      <div class="panel" id="panel-stocks-nas"></div>
+
+      <!-- Gold -->
+      <div class="panel" id="panel-gold"></div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeModalOnBackdrop(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Entry</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- Enhanced Chart.js Integration for Mutual Funds Bar Graph -->
+<script>
+// Global chart instance
+window.mfCategoryChart = null;
+
+// Function to create/update mutual funds category bar graph
+window.createMFCategoryChart = function(chartData) {
+  const chartContainer = document.getElementById('mfCategoryChartContainer');
+  if (!chartContainer) {
+    console.warn('MF Category Chart container not found');
+    return;
+  }
+
+  const canvas = document.getElementById('mfCategoryChart');
+  if (!canvas) {
+    console.warn('MF Category Chart canvas not found');
+    return;
+  }
+
+  // Destroy existing chart if it exists
+  if (window.mfCategoryChart) {
+    window.mfCategoryChart.destroy();
+  }
+
+  // Calculate gains for tooltips
+  const gains = chartData.investments.map((inv, idx) => 
+    chartData.currentValues[idx] - inv
+  );
+
+  const ctx = canvas.getContext('2d');
+  window.mfCategoryChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartData.categories,
+      datasets: [
+        {
+          label: 'Investment Amount (₹)',
+          data: chartData.investments,
+          backgroundColor: 'rgba(59, 130, 246, 0.7)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+        },
+        {
+          label: 'Current Value (₹)',
+          data: chartData.currentValues,
+          backgroundColor: 'rgba(16, 185, 129, 0.7)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#e2e8f0',
+            font: {
+              size: 13,
+              weight: '600',
+              family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(26, 33, 66, 0.95)',
+          titleColor: '#e2e8f0',
+          bodyColor: '#94a3b8',
+          borderColor: 'rgba(59, 130, 246, 0.5)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+          titleFont: {
+            size: 14,
+            weight: '600'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ₹' + context.parsed.y.toLocaleString('en-IN', {maximumFractionDigits: 0});
+              }
+              return label;
+            },
+            afterLabel: function(context) {
+              const categoryIndex = context.dataIndex;
+              const gain = chartData.currentValues[categoryIndex] - chartData.investments[categoryIndex];
+              const gainPercent = ((gain / chartData.investments[categoryIndex]) * 100).toFixed(2);
+              const fundCount = chartData.fundCounts[categoryIndex];
+              
+              return [
+                `Gain: ₹${gain.toLocaleString('en-IN', {maximumFractionDigits: 0})} (${gainPercent}%)`,
+                `Funds: ${fundCount}`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: {
+              size: 12,
+              weight: '600'
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(45, 58, 95, 0.3)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: {
+              size: 11
+            },
+            callback: function(value) {
+              if (value >= 100000) {
+                return '₹' + (value / 100000).toFixed(1) + 'L';
+              } else if (value >= 1000) {
+                return '₹' + (value / 1000).toFixed(0) + 'K';
+              }
+              return '₹' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+};
+
+// Helper function to add MF category chart to a panel
+window.addMFCategoryChartToPanel = function(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  // Check if chart container already exists
+  if (document.getElementById('mfCategoryChartContainer')) return;
+
+  const chartHTML = `
+    <div class="chart-container" id="mfCategoryChartContainer" style="margin-top: 30px;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <i class="fas fa-chart-bar"></i>
+          Mutual Funds by Category
+        </div>
+        <p class="chart-subtitle">Investment distribution across different fund types</p>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="mfCategoryChart"></canvas>
+      </div>
+    </div>
+  `;
+
+  // Insert chart before tables or at the end of the panel
+  const tables = panel.querySelectorAll('.table-container');
+  if (tables.length > 0) {
+    tables[0].insertAdjacentHTML('beforebegin', chartHTML);
+  } else {
+    panel.insertAdjacentHTML('beforeend', chartHTML);
+  }
+};
+</script>
+
+<script src="./assets/app.js"></script>
+
+</body>
+</html>
