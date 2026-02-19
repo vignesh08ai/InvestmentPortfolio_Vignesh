@@ -140,11 +140,7 @@
       "owner": "Mahesh",
       "units": 16634.38,
       "purchaseNAV": 21.731,
-      "invested": 361481.7118,
-      "currentNAV": 25.65,
-      "currentValue": 423511.3148,
-      "gainLoss": 62029.603,
-      "returnPct": 17.16
+      "invested": 361482
     },
     {
       "name": "ICICI Prudential Manufacturing Fund-Growth",
@@ -174,25 +170,17 @@
       "name": "Nippon India Power and Infra Fund Growth (SIP)",
       "schemeCode": "101262",
       "owner": "Mahesh",
-      "units": 333.93,
-      "purchaseNAV": 341.3678,
-      "invested": 113992.9495,
-      "currentNAV": 351.7458,
-      "currentValue": 116479.793,
-      "gainLoss": 2486.8435,
-      "returnPct": 2.18
+      "units": 348.01,
+      "purchaseNAV": 341.9261,
+      "invested": 118994.05
     },
     {
       "name": "Nippon India Small Cap Fund Growth (SIP)",
       "schemeCode": "113177",
       "owner": "Mahesh",
-      "units": 2071.45,
-      "purchaseNAV": 153.8697,
-      "invested": 318733.3901,
-      "currentNAV": 162.7355,
-      "currentValue": 337032.7865,
-      "gainLoss": 18299.3964,
-      "returnPct": 5.74
+      "units": 2139.86,
+      "purchaseNAV": 154.2082,
+      "invested": 329983.54
     },
     {
       "name": "Quant Mid Cap Fund Growth ",
@@ -212,83 +200,55 @@
       "owner": "Mahesh",
       "units": 539.8,
       "purchaseNAV": 555.7336,
-      "invested": 299984.9973,
-      "currentNAV": 655.2183,
-      "currentValue": 351699.9965,
-      "gainLoss": 51714.9992,
-      "returnPct": 17.24
+      "invested": 299985
     },
     {
       "name": "Tata Banking and Financial Services Fund Growth (SIP)",
       "schemeCode": "135794",
       "owner": "Mahesh",
-      "units": 1184.98,
-      "purchaseNAV": 37.9736,
-      "invested": 44997.9565,
-      "currentNAV": 45.9314,
-      "currentValue": 53875.9452,
-      "gainLoss": 8877.9887,
-      "returnPct": 19.73
+      "units": 1217.37,
+      "purchaseNAV": 38.1954,
+      "invested": 46497.83
     },
     {
       "name": "Tata Digital India Fund Growth (SIP)",
       "schemeCode": "135797",
       "owner": "Mahesh",
-      "units": 1682.75,
-      "purchaseNAV": 44.5678,
-      "invested": 74996.4655,
-      "currentNAV": 42.5964,
-      "currentValue": 71853.0885,
-      "gainLoss": -3143.377,
-      "returnPct": -4.19
+      "units": 1741.41,
+      "purchaseNAV": 44.5021,
+      "invested": 77496.28
     },
     {
       "name": "Tata India Consumer Fund Growth",
       "schemeCode": "135804",
       "owner": "Mahesh",
-      "units": 2513.78,
-      "purchaseNAV": 42.3645,
-      "invested": 106495.0328,
-      "currentNAV": 42.977,
-      "currentValue": 107962.3262,
-      "gainLoss": 1467.2934,
-      "returnPct": 1.38
+      "units": 2606.24,
+      "purchaseNAV": 42.3962,
+      "invested": 110494.71
     },
     {
       "name": "Tata India Pharma and Healthcare Fund Growth",
       "schemeCode": "135812",
       "owner": "Mahesh",
-      "units": 3742.37,
-      "purchaseNAV": 28.4565,
-      "invested": 106494.7519,
-      "currentNAV": 29.6016,
-      "currentValue": 110262.57,
-      "gainLoss": 3767.8181,
-      "returnPct": 3.54
+      "units": 3876.3,
+      "purchaseNAV": 28.5052,
+      "invested": 110494.71
     },
     {
       "name": "Tata Infrastructure Fund Growth (SIP)",
       "schemeCode": "101766",
       "owner": "Mahesh",
-      "units": 278.22,
-      "purchaseNAV": 161.7379,
-      "invested": 44998.7185,
-      "currentNAV": 167.1995,
-      "currentValue": 46226.6147,
-      "gainLoss": 1227.8961,
-      "returnPct": 2.73
+      "units": 287.06,
+      "purchaseNAV": 161.9806,
+      "invested": 46497.83
     },
     {
       "name": "Tata Resources and Energy Fund Growth (SIP)",
       "schemeCode": "135815",
       "owner": "Mahesh",
-      "units": 1107.77,
-      "purchaseNAV": 40.6201,
-      "invested": 44997.7282,
-      "currentNAV": 47.0114,
-      "currentValue": 51698.075,
-      "gainLoss": 6700.3468,
-      "returnPct": 14.89
+      "units": 1139.43,
+      "purchaseNAV": 40.8082,
+      "invested": 46497.83
     },
     {
       "name": "ICICI Prudential Manufacturing Fund-Growth",
