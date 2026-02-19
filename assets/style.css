@@ -530,21 +530,25 @@ td {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #fff;
-  z-index: 1000;
+  z-index: 10000;
   transform: translateY(100px);
   opacity: 0;
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  max-width: 320px;
+  width: auto;
+  white-space: nowrap;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { background: var(--teal); }
 .toast.error   { background: var(--red); }
 .toast.info    { background: var(--accent); }
+.toast.warning { background: var(--gold); }
 
 /* ══════════════════════════════════════
    ANIMATIONS
@@ -706,17 +710,24 @@ td {
 
 /* ADD BUTTON in toolbar */
 .btn-add {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex !important; 
+  align-items: center; 
+  gap: 6px;
   padding: 8px 16px; 
   background: linear-gradient(135deg, var(--accent), var(--accent2)); 
   color: #fff;
-  border: none; border-radius: 9px; font-family: var(--fn);
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: all .2s; white-space: nowrap;
+  border: none; 
+  border-radius: 9px; 
+  font-family: var(--fn);
+  font-size: 13px; 
+  font-weight: 600; 
+  cursor: pointer !important;
+  transition: all .2s; 
+  white-space: nowrap;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-  position: relative;
-  z-index: 50;
-  pointer-events: auto;
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 .btn-add:hover { 
   transform: translateY(-2px); 
@@ -725,18 +736,25 @@ td {
 
 /* EDIT / DELETE row buttons */
 .row-actions { 
-  display: flex; 
+  display: flex !important; 
   gap: 6px;
-  position: relative;
-  z-index: 100;
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 .btn-edit, .btn-del {
-  padding: 4px 10px; border-radius: 6px; font-size: 11px;
-  font-weight: 600; font-family: var(--fn); cursor: pointer;
-  border: none; transition: all .15s;
-  pointer-events: auto;
-  position: relative;
-  z-index: 100;
+  padding: 4px 10px; 
+  border-radius: 6px; 
+  font-size: 11px;
+  font-weight: 600; 
+  font-family: var(--fn); 
+  cursor: pointer !important;
+  border: none; 
+  transition: all .15s;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  display: inline-block !important;
 }
 .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
 .btn-edit:hover { background: var(--accent); color: #fff; }
