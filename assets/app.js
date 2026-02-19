@@ -29,6 +29,84 @@ const COLUMN_VISIBILITY_KEY = 'column_visibility_v1';
 window.addEventListener('DOMContentLoaded', async () => {
   console.log('[BOOT] Starting...');
   showSpinner('Loading portfolio…');
+  
+  // Add DIRECT event listeners to buttons (not relying on onclick)
+  function attachButtonListeners() {
+    console.log('[EVENTS] Attaching button listeners...');
+    
+    // Remove any existing listeners
+    const oldHandler = window._buttonClickHandler;
+    if (oldHandler) {
+      document.removeEventListener('click', oldHandler, true);
+    }
+    
+    // Create new handler
+    window._buttonClickHandler = function(e) {
+      const target = e.target;
+      
+      // Check if click is on or inside a button
+      const editBtn = target.closest('.btn-edit');
+      const delBtn = target.closest('.btn-del');
+      const addBtn = target.closest('.btn-add');
+      
+      if (editBtn) {
+        console.log('[CLICK] Edit button clicked!');
+        e.preventDefault();
+        e.stopPropagation();
+        const onclick = editBtn.getAttribute('onclick');
+        if (onclick) {
+          console.log('[CLICK] Executing:', onclick);
+          // Extract function call and execute
+          const match = onclick.match(/openEditModal\('([^']+)',(\d+)\)/);
+          if (match) {
+            openEditModal(match[1], parseInt(match[2]));
+          }
+        }
+        return false;
+      }
+      
+      if (delBtn) {
+        console.log('[CLICK] Delete button clicked!');
+        e.preventDefault();
+        e.stopPropagation();
+        const onclick = delBtn.getAttribute('onclick');
+        if (onclick) {
+          console.log('[CLICK] Executing:', onclick);
+          // Extract function call and execute
+          const match = onclick.match(/deleteRow\('([^']+)',(\d+)\)/);
+          if (match) {
+            deleteRow(match[1], parseInt(match[2]));
+          }
+        }
+        return false;
+      }
+      
+      if (addBtn) {
+        console.log('[CLICK] Add button clicked!');
+        e.preventDefault();
+        e.stopPropagation();
+        const onclick = addBtn.getAttribute('onclick');
+        if (onclick) {
+          console.log('[CLICK] Executing:', onclick);
+          // Extract and execute the function call
+          try {
+            const funcMatch = onclick.match(/openAddModal\('([^']+)'(?:,'([^']*)'){0,1}\)/);
+            if (funcMatch) {
+              openAddModal(funcMatch[1], funcMatch[2] || '');
+            }
+          } catch(err) {
+            console.error('[CLICK] Error executing add button:', err);
+          }
+        }
+        return false;
+      }
+    };
+    
+    // Attach with capture=true to catch before anything else
+    document.addEventListener('click', window._buttonClickHandler, true);
+    console.log('[EVENTS] Button listeners attached!');
+  }
+  
   try {
     // Try localStorage first (user edits), fall back to JSON file
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -52,6 +130,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('[BOOT] Showing dashboard...');
     showPanel('dashboard');
     
+    // Attach button listeners after initial render
+    setTimeout(attachButtonListeners, 100);
+    
     // Fetch live data - don't fail if this errors
     try {
       console.log('[BOOT] Fetching live data...');
@@ -60,6 +141,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       updateSummaryCards();
       console.log('[BOOT] Refreshing dashboard...');
       showPanel('dashboard'); // refresh with live data
+      // Re-attach listeners after refresh
+      setTimeout(attachButtonListeners, 100);
       showToast('✓ Live prices loaded', 'success');
       document.getElementById('statusDot').className = 'status-dot live';
       console.log('[BOOT] ✓ Success!');
@@ -518,6 +601,18 @@ function showPanel(id) {
   
   // Show export bar on all pages
   showExportBar();
+  
+  // Re-attach button listeners after panel change
+  setTimeout(() => {
+    if (window._buttonClickHandler) {
+      console.log('[PANEL] Re-attaching button listeners for panel:', id);
+      // Listeners are already attached globally, just log for debugging
+      const editBtns = document.querySelectorAll('.btn-edit');
+      const delBtns = document.querySelectorAll('.btn-del');
+      const addBtns = document.querySelectorAll('.btn-add');
+      console.log('[PANEL] Buttons found:', {edit: editBtns.length, del: delBtns.length, add: addBtns.length});
+    }
+  }, 100);
 }
 
 /* ═══════════════════════════════════════════════════════
