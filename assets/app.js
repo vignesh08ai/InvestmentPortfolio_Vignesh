@@ -521,16 +521,19 @@ function showPanel(id) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   EXPORT BAR (Sticky Bottom)
+   EXPORT BAR (At bottom of each panel)
 ═══════════════════════════════════════════════════════ */
 function showExportBar() {
+  // Find the active panel
+  const activePanel = document.querySelector('.panel.active');
+  if (!activePanel) return;
+  
   // Remove existing export bar if any
-  const existingBar = document.getElementById('exportBar');
+  const existingBar = activePanel.querySelector('.export-bar');
   if (existingBar) existingBar.remove();
   
   // Create export bar
   const exportBar = document.createElement('div');
-  exportBar.id = 'exportBar';
   exportBar.className = 'export-bar';
   exportBar.innerHTML = `
     <span style="flex: 1;">
@@ -551,7 +554,9 @@ function showExportBar() {
       Sync to GitHub
     </button>
   `;
-  document.body.appendChild(exportBar);
+  
+  // Append to the active panel
+  activePanel.appendChild(exportBar);
 }
 
 /* ═══════════════════════════════════════════════════════
