@@ -159,6 +159,239 @@ function calcFD(fd) {
   const gl      = curVal - fd.invested;
   return { curVal, gl, daysLeft, ret:(gl/fd.invested)*100 };
 }
+/* ═══════════════════════════════════════════════════════
+   MUTUAL FUNDS CATEGORIZATION & BAR GRAPH
+═══════════════════════════════════════════════════════ */
+function categorizeMutualFunds(mutualFundsData) {
+  const categories = {
+    'Sectoral/Thematic': { investment: 0, currentValue: 0, count: 0 },
+    'Mid Cap': { investment: 0, currentValue: 0, count: 0 },
+    'Small Cap': { investment: 0, currentValue: 0, count: 0 },
+    'Large & Mid Cap': { investment: 0, currentValue: 0, count: 0 },
+    'Flexi Cap': { investment: 0, currentValue: 0, count: 0 },
+    'Multi Factor/Asset': { investment: 0, currentValue: 0, count: 0 },
+    'Other': { investment: 0, currentValue: 0, count: 0 }
+  };
+
+  mutualFundsData.forEach(mf => {
+    const fundName = mf.name || '';
+    const fundNameLower = fundName.toLowerCase();
+    const calc = calcMF(mf);
+    
+    let category = 'Other';
+    
+    if (fundNameLower.includes('small cap')) {
+      category = 'Small Cap';
+    } else if (fundNameLower.includes('mid cap') || fundNameLower.includes('midcap')) {
+      category = 'Mid Cap';
+    } else if (fundNameLower.includes('large') && fundNameLower.includes('mid')) {
+      category = 'Large & Mid Cap';
+    } else if (fundNameLower.includes('flexi cap')) {
+      category = 'Flexi Cap';
+    } else if (fundNameLower.includes('multi')) {
+      category = 'Multi Factor/Asset';
+    } else if (
+      fundNameLower.includes('sectoral') || 
+      fundNameLower.includes('banking') || 
+      fundNameLower.includes('pharma') || 
+      fundNameLower.includes('digital') || 
+      fundNameLower.includes('infra') || 
+      fundNameLower.includes('energy') || 
+      fundNameLower.includes('consumer') || 
+      fundNameLower.includes('manufacturing') || 
+      fundNameLower.includes('business cycle') || 
+      fundNameLower.includes('business') || 
+      fundNameLower.includes('power') ||
+      fundNameLower.includes('resources') ||
+      fundNameLower.includes('healthcare')
+    ) {
+      category = 'Sectoral/Thematic';
+    }
+    
+    categories[category].investment += mf.invested || 0;
+    categories[category].currentValue += calc.curVal || 0;
+    categories[category].count += 1;
+  });
+
+  // Convert to chart data format
+  const chartData = {
+    categories: [],
+    investments: [],
+    currentValues: [],
+    fundCounts: []
+  };
+
+  Object.entries(categories).forEach(([category, data]) => {
+    if (data.count > 0) {
+      chartData.categories.push(category);
+      chartData.investments.push(data.investment);
+      chartData.currentValues.push(data.currentValue);
+      chartData.fundCounts.push(data.count);
+    }
+  });
+
+  return chartData;
+}
+
+function createMFCategoryChart(owner = 'mahesh') {
+  const chartId = owner === 'mahesh' ? 'mfCategoryChartMahesh' : 'mfCategoryChartFamily';
+  
+  // Filter MFs by owner
+  const mfData = PORTFOLIO.mutualFunds.filter(mf => 
+    owner === 'mahesh' ? mf.owner === 'Mahesh' : mf.owner === 'Family'
+  );
+  
+  if (!mfData || mfData.length === 0) {
+    console.log(`[CHART] No mutual funds data for ${owner}`);
+    return;
+  }
+
+  const chartData = categorizeMutualFunds(mfData);
+  
+  if (chartData.categories.length === 0) {
+    console.log(`[CHART] No categories to display for ${owner}`);
+    return;
+  }
+
+  // Destroy existing chart if exists
+  if (chartStore[chartId]) {
+    try {
+      chartStore[chartId].destroy();
+    } catch(e) {
+      console.error('[CHART] Error destroying old chart:', e);
+    }
+    delete chartStore[chartId];
+  }
+
+  const canvas = document.getElementById(chartId);
+  if (!canvas) {
+    console.warn(`[CHART] Canvas ${chartId} not found`);
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  chartStore[chartId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartData.categories,
+      datasets: [
+        {
+          label: 'Investment Amount (₹)',
+          data: chartData.investments,
+          backgroundColor: 'rgba(59, 130, 246, 0.7)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+        },
+        {
+          label: 'Current Value (₹)',
+          data: chartData.currentValues,
+          backgroundColor: 'rgba(16, 185, 129, 0.7)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#e2e8f0',
+            font: {
+              size: 13,
+              weight: '600',
+              family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(26, 33, 66, 0.95)',
+          titleColor: '#e2e8f0',
+          bodyColor: '#94a3b8',
+          borderColor: 'rgba(59, 130, 246, 0.5)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+          titleFont: {
+            size: 14,
+            weight: '600'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ₹' + context.parsed.y.toLocaleString('en-IN', {maximumFractionDigits: 0});
+              }
+              return label;
+            },
+            afterLabel: function(context) {
+              const categoryIndex = context.dataIndex;
+              const gain = chartData.currentValues[categoryIndex] - chartData.investments[categoryIndex];
+              const gainPercent = ((gain / chartData.investments[categoryIndex]) * 100).toFixed(2);
+              const fundCount = chartData.fundCounts[categoryIndex];
+              
+              return [
+                `Gain: ₹${gain.toLocaleString('en-IN', {maximumFractionDigits: 0})} (${gainPercent}%)`,
+                `Funds: ${fundCount}`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: {
+              size: 12,
+              weight: '600'
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(45, 58, 95, 0.3)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: {
+              size: 11
+            },
+            callback: function(value) {
+              if (value >= 10000000) {
+                return '₹' + (value / 10000000).toFixed(1) + 'Cr';
+              } else if (value >= 100000) {
+                return '₹' + (value / 100000).toFixed(1) + 'L';
+              } else if (value >= 1000) {
+                return '₹' + (value / 1000).toFixed(0) + 'K';
+              }
+              return '₹' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  console.log(`[CHART] Created MF category chart for ${owner}:`, chartData);
+}
+
 function getAssetTotals() {
   const groups = [
     { label:'Fixed Deposits', icon:'🏛', items:PORTFOLIO.fixedDeposits,
@@ -367,8 +600,31 @@ function buildMFPanel(el,owner) {
   ];
   const rows=PORTFOLIO.mutualFunds.filter(m=>m.owner===owner);
   const visibleCols = filterVisibleColumns(id, cols);
-  el.innerHTML=mkControls(id,true,'mf',owner,cols)+mkTable(id,visibleCols);console.log("[DEBUG] MF controls rendered");
+  
+  // Add chart container HTML before the table
+  const chartId = owner === 'Mahesh' ? 'mfCategoryChartMahesh' : 'mfCategoryChartFamily';
+  const chartHTML = `
+    <div class="chart-container" style="margin-bottom: 30px;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <i class="fas fa-chart-bar" style="color: #3b82f6;"></i>
+          Mutual Funds by Category
+        </div>
+        <p class="chart-subtitle">Investment distribution across different fund types</p>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="${chartId}"></canvas>
+      </div>
+    </div>`;
+  
+  el.innerHTML = chartHTML + mkControls(id,true,'mf',owner,cols) + mkTable(id,visibleCols);
+  console.log("[DEBUG] MF controls rendered");
   renderTable(id,visibleCols,rows);
+  
+  // Initialize the chart after a short delay to ensure DOM is ready
+  setTimeout(() => {
+    createMFCategoryChart(owner.toLowerCase());
+  }, 100);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -879,6 +1135,14 @@ async function handleRefresh(){
   showSpinner('Fetching live prices…');
   await fetchAllLiveData();
   updateSummaryCards();showPanel(activePanel);
+  
+  // Refresh MF category charts if on MF panels
+  if (activePanel === 'mf-mahesh') {
+    setTimeout(() => createMFCategoryChart('mahesh'), 150);
+  } else if (activePanel === 'mf-family') {
+    setTimeout(() => createMFCategoryChart('family'), 150);
+  }
+  
   hideSpinner();btn.classList.remove('loading');btn.querySelector('span').textContent='Refresh Prices';
   document.getElementById('lastUpdated').textContent='Updated: '+new Date().toLocaleTimeString('en-IN');
   showToast('✓ Prices refreshed','success');
