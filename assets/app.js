@@ -30,83 +30,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   console.log('[BOOT] Starting...');
   showSpinner('Loading portfolio…');
   
-  // Add DIRECT event listeners to buttons (not relying on onclick)
-  function attachButtonListeners() {
-    console.log('[EVENTS] Attaching button listeners...');
-    
-    // Remove any existing listeners
-    const oldHandler = window._buttonClickHandler;
-    if (oldHandler) {
-      document.removeEventListener('click', oldHandler, true);
-    }
-    
-    // Create new handler
-    window._buttonClickHandler = function(e) {
-      const target = e.target;
-      
-      // Check if click is on or inside a button
-      const editBtn = target.closest('.btn-edit');
-      const delBtn = target.closest('.btn-del');
-      const addBtn = target.closest('.btn-add');
-      
-      if (editBtn) {
-        console.log('[CLICK] Edit button clicked!');
-        e.preventDefault();
-        e.stopPropagation();
-        const onclick = editBtn.getAttribute('onclick');
-        if (onclick) {
-          console.log('[CLICK] Executing:', onclick);
-          // Extract function call and execute
-          const match = onclick.match(/openEditModal\('([^']+)',(\d+)\)/);
-          if (match) {
-            openEditModal(match[1], parseInt(match[2]));
-          }
-        }
-        return false;
-      }
-      
-      if (delBtn) {
-        console.log('[CLICK] Delete button clicked!');
-        e.preventDefault();
-        e.stopPropagation();
-        const onclick = delBtn.getAttribute('onclick');
-        if (onclick) {
-          console.log('[CLICK] Executing:', onclick);
-          // Extract function call and execute
-          const match = onclick.match(/deleteRow\('([^']+)',(\d+)\)/);
-          if (match) {
-            deleteRow(match[1], parseInt(match[2]));
-          }
-        }
-        return false;
-      }
-      
-      if (addBtn) {
-        console.log('[CLICK] Add button clicked!');
-        e.preventDefault();
-        e.stopPropagation();
-        const onclick = addBtn.getAttribute('onclick');
-        if (onclick) {
-          console.log('[CLICK] Executing:', onclick);
-          // Extract and execute the function call
-          try {
-            const funcMatch = onclick.match(/openAddModal\('([^']+)'(?:,'([^']*)'){0,1}\)/);
-            if (funcMatch) {
-              openAddModal(funcMatch[1], funcMatch[2] || '');
-            }
-          } catch(err) {
-            console.error('[CLICK] Error executing add button:', err);
-          }
-        }
-        return false;
-      }
-    };
-    
-    // Attach with capture=true to catch before anything else
-    document.addEventListener('click', window._buttonClickHandler, true);
-    console.log('[EVENTS] Button listeners attached!');
-  }
-  
   try {
     // Try localStorage first (user edits), fall back to JSON file
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -130,9 +53,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('[BOOT] Showing dashboard...');
     showPanel('dashboard');
     
-    // Attach button listeners after initial render
-    setTimeout(attachButtonListeners, 100);
-    
     // Fetch live data - don't fail if this errors
     try {
       console.log('[BOOT] Fetching live data...');
@@ -141,8 +61,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       updateSummaryCards();
       console.log('[BOOT] Refreshing dashboard...');
       showPanel('dashboard'); // refresh with live data
-      // Re-attach listeners after refresh
-      setTimeout(attachButtonListeners, 100);
       showToast('✓ Live prices loaded', 'success');
       document.getElementById('statusDot').className = 'status-dot live';
       console.log('[BOOT] ✓ Success!');
@@ -601,18 +519,6 @@ function showPanel(id) {
   
   // Show export bar on all pages
   showExportBar();
-  
-  // Re-attach button listeners after panel change
-  setTimeout(() => {
-    if (window._buttonClickHandler) {
-      console.log('[PANEL] Re-attaching button listeners for panel:', id);
-      // Listeners are already attached globally, just log for debugging
-      const editBtns = document.querySelectorAll('.btn-edit');
-      const delBtns = document.querySelectorAll('.btn-del');
-      const addBtns = document.querySelectorAll('.btn-add');
-      console.log('[PANEL] Buttons found:', {edit: editBtns.length, del: delBtns.length, add: addBtns.length});
-    }
-  }, 100);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -936,13 +842,59 @@ document.addEventListener('click', (e) => {
    TABLE HELPERS
 ═══════════════════════════════════════════════════════ */
 function rowActions(type,idx) {
+  // Generate unique IDs for buttons to attach direct event listeners
+  const editId = `edit-${type}-${idx}-${Math.random().toString(36).substr(2, 9)}`;
+  const delId = `del-${type}-${idx}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Schedule event listener attachment
+  setTimeout(() => {
+    const editBtn = document.getElementById(editId);
+    const delBtn = document.getElementById(delId);
+    
+    if (editBtn && !editBtn._listenerAttached) {
+      editBtn._listenerAttached = true;
+      editBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Edit clicked:', type, idx);
+        openEditModal(type, idx);
+      }, false);
+    }
+    
+    if (delBtn && !delBtn._listenerAttached) {
+      delBtn._listenerAttached = true;
+      delBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Delete clicked:', type, idx);
+        deleteRow(type, idx);
+      }, false);
+    }
+  }, 0);
+  
   return `<div class="row-actions">
-    <button class="btn-edit" onclick="openEditModal('${type}',${idx})">✏ Edit</button>
-    <button class="btn-del"  onclick="deleteRow('${type}',${idx})">🗑</button>
+    <button class="btn-edit" id="${editId}" type="button">✏ Edit</button>
+    <button class="btn-del" id="${delId}" type="button">🗑</button>
   </div>`;
 }
 
 function mkControls(id,hasFilter,addType,addMeta,cols) {
+  const addBtnId = `add-${addType}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Attach event listener after render
+  setTimeout(() => {
+    const addBtn = document.getElementById(addBtnId);
+    if (addBtn && !addBtn._listenerAttached) {
+      addBtn._listenerAttached = true;
+      addBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Add clicked:', addType, addMeta);
+        openAddModal(addType, addMeta || '');
+      }, false);
+    }
+  }, 0);
+  
   return `
   <div class="export-bar">
     <span>⚠️ <strong>Changes are saved in your browser.</strong> Export JSON to update your GitHub file.</span>
@@ -960,7 +912,7 @@ function mkControls(id,hasFilter,addType,addMeta,cols) {
     </select>`:''}
     <div class="row-count" id="rc-${id}">—</div>
     </div>
-    <button class="btn-add" onclick="openAddModal('${addType}','${addMeta||''}')">＋ Add ${addType==='mf'?'Fund':addType==='fd'?'FD':addType==='stock'?'Stock':'Gold'}</button>
+    <button class="btn-add" id="${addBtnId}" type="button">＋ Add ${addType==='mf'?'Fund':addType==='fd'?'FD':addType==='stock'?'Stock':'Gold'}</button>
     ${cols ? buildColumnToggle(id, cols) : ''}
   </div>`;
 }
