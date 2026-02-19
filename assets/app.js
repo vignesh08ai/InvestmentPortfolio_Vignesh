@@ -530,17 +530,21 @@ function showExportBar() {
   if (!activePanel) return;
   
   // Remove existing export bar if any
-  const existingBar = activePanel.querySelector('.export-bar');
+  const existingBar = activePanel.querySelector('.export-bar-bottom');
   if (existingBar) existingBar.remove();
+  
+  // Generate unique IDs for buttons
+  const exportBtnId = `export-bottom-${Math.random().toString(36).substr(2, 9)}`;
+  const syncBtnId = `sync-bottom-${Math.random().toString(36).substr(2, 9)}`;
   
   // Create export bar
   const exportBar = document.createElement('div');
-  exportBar.className = 'export-bar';
+  exportBar.className = 'export-bar export-bar-bottom';
   exportBar.innerHTML = `
     <span style="flex: 1;">
       <strong>💾 Data Management</strong> — Export your portfolio or sync to GitHub
     </span>
-    <button class="btn-export" onclick="exportJSON()">
+    <button class="btn-export" id="${exportBtnId}" type="button">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="7 10 12 15 17 10"></polyline>
@@ -548,7 +552,7 @@ function showExportBar() {
       </svg>
       Download JSON
     </button>
-    <button class="btn-sync" onclick="syncToGitHub()">
+    <button class="btn-sync" id="${syncBtnId}" type="button">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
       </svg>
@@ -558,6 +562,31 @@ function showExportBar() {
   
   // Append to the active panel
   activePanel.appendChild(exportBar);
+  
+  // Attach event listeners
+  setTimeout(() => {
+    const exportBtn = document.getElementById(exportBtnId);
+    if (exportBtn && !exportBtn._listenerAttached) {
+      exportBtn._listenerAttached = true;
+      exportBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Export JSON (bottom) clicked');
+        exportJSON();
+      }, false);
+    }
+    
+    const syncBtn = document.getElementById(syncBtnId);
+    if (syncBtn && !syncBtn._listenerAttached) {
+      syncBtn._listenerAttached = true;
+      syncBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Sync to GitHub (bottom) clicked');
+        syncToGitHub();
+      }, false);
+    }
+  }, 0);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -880,9 +909,12 @@ function rowActions(type,idx) {
 
 function mkControls(id,hasFilter,addType,addMeta,cols) {
   const addBtnId = `add-${addType}-${Math.random().toString(36).substr(2, 9)}`;
+  const syncBtnId = `sync-${id}-${Math.random().toString(36).substr(2, 9)}`;
+  const exportBtnId = `export-${id}-${Math.random().toString(36).substr(2, 9)}`;
   
-  // Attach event listener after render
+  // Attach event listeners after render
   setTimeout(() => {
+    // Add button
     const addBtn = document.getElementById(addBtnId);
     if (addBtn && !addBtn._listenerAttached) {
       addBtn._listenerAttached = true;
@@ -893,13 +925,37 @@ function mkControls(id,hasFilter,addType,addMeta,cols) {
         openAddModal(addType, addMeta || '');
       }, false);
     }
+    
+    // Sync to GitHub button
+    const syncBtn = document.getElementById(syncBtnId);
+    if (syncBtn && !syncBtn._listenerAttached) {
+      syncBtn._listenerAttached = true;
+      syncBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Sync to GitHub clicked');
+        syncToGitHub();
+      }, false);
+    }
+    
+    // Export JSON button
+    const exportBtn = document.getElementById(exportBtnId);
+    if (exportBtn && !exportBtn._listenerAttached) {
+      exportBtn._listenerAttached = true;
+      exportBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[BTN] Export JSON clicked');
+        exportJSON();
+      }, false);
+    }
   }, 0);
   
   return `
   <div class="export-bar">
     <span>⚠️ <strong>Changes are saved in your browser.</strong> Export JSON to update your GitHub file.</span>
-    <button onclick="syncToGitHub()" style="margin-right:12px;padding:10px 20px;background:#059669;color:#fff;border:2px solid #047857;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">SYNC TO GITHUB</button>
-    <button onclick="exportJSON()" style="padding:10px 20px;background:#64748b;color:#fff;border:2px solid #475569;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">DOWNLOAD JSON</button>
+    <button id="${syncBtnId}" type="button" style="margin-right:12px;padding:10px 20px;background:#059669;color:#fff;border:2px solid #047857;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">SYNC TO GITHUB</button>
+    <button id="${exportBtnId}" type="button" style="padding:10px 20px;background:#64748b;color:#fff;border:2px solid #475569;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">DOWNLOAD JSON</button>
   </div>
   <div class="ctrl-bar">
     <div class="ctrl-bar-left">
