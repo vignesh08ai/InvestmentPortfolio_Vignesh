@@ -715,7 +715,7 @@ td {
   transition: all .2s; white-space: nowrap;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
   position: relative;
-  z-index: 1;
+  z-index: 50;
   pointer-events: auto;
 }
 .btn-add:hover { 
@@ -728,7 +728,7 @@ td {
   display: flex; 
   gap: 6px;
   position: relative;
-  z-index: 1;
+  z-index: 100;
 }
 .btn-edit, .btn-del {
   padding: 4px 10px; border-radius: 6px; font-size: 11px;
@@ -736,37 +736,32 @@ td {
   border: none; transition: all .15s;
   pointer-events: auto;
   position: relative;
-  z-index: 1;
+  z-index: 100;
 }
 .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
 .btn-edit:hover { background: var(--accent); color: #fff; }
 .btn-del  { background: rgba(239, 68, 68, 0.15); color: var(--red); }
 .btn-del:hover  { background: var(--red); color: #fff; }
 
-/* EXPORT BANNER - Sticky at bottom */
+/* EXPORT BANNER - At bottom of content (not fixed) */
 .export-bar {
   background: linear-gradient(135deg, #fef3c7, #fde68a); 
   border: 1px solid #fbbf24;
-  border-radius: 0;
-  padding: 14px 20px;
+  border-radius: 12px;
+  padding: 16px 24px;
   font-size: 13px; 
   color: #78350f;
   display: flex; 
   align-items: center; 
   gap: 12px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 90;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  margin-top: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
 }
 .export-bar strong { font-weight: 700; }
 .btn-export,
 .btn-sync {
-  margin-left: 8px; 
-  padding: 8px 16px;
+  padding: 10px 18px;
   background: #f59e0b; 
   color: #fff;
   border: none; 
@@ -779,7 +774,7 @@ td {
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .btn-export:hover,
 .btn-sync:hover { 
@@ -788,9 +783,9 @@ td {
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
-/* Add padding to main content to prevent overlap with sticky export bar */
+/* Remove extra padding from main since export bar is not fixed */
 .main {
-  padding-bottom: 80px;
+  padding-bottom: 30px;
 }
 
 /* Hide summary cards by default - JavaScript will show on dashboard */
@@ -811,7 +806,9 @@ td {
   width: max-content;
 }
 
-/* Sticky first column (optional - can be enabled) */
+/* Sticky first column - DISABLED to prevent click blocking */
+/* Uncomment if you want sticky first column, but note it may block buttons */
+/*
 .tbl-card table th:first-child,
 .tbl-card table td:first-child {
   position: sticky;
@@ -819,6 +816,19 @@ td {
   background: var(--surface);
   z-index: 10;
   box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+}
+*/
+
+/* Ensure actions column (last column) is always clickable */
+.tbl-card table th:last-child,
+.tbl-card table td:last-child {
+  position: relative;
+  z-index: 15;
+  background: var(--surface);
+}
+
+.tbl-card table tbody tr:hover td:last-child {
+  background: var(--surface2);
 }
 
 /* ═══════════════════════════════════════════════════════
