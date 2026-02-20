@@ -128,11 +128,7 @@
       "owner": "Mahesh",
       "units": 950.7,
       "purchaseNAV": 10.518,
-      "invested": 9999.4626,
-      "currentNAV": 10.565,
-      "currentValue": 9992.8077,
-      "gainLoss": -6.6549,
-      "returnPct": -0.07
+      "invested": 9999.4626
     },
     {
       "name": "ICICI Prudential Business Cycle Fund-Growth",
@@ -703,9 +699,9 @@
       "name": "Invesco QQQ ETF (NASDAQ 100)",
       "symbol": "QQQ",
       "exchange": "NASDAQ",
-      "units": 0.155761,
-      "avgPrice": 612.05,
-      "invested": 93.64
+      "units": 0.165611,
+      "avgPrice": 611.75,
+      "invested": 101.31
     },
     {
       "name": "Vanguard 500 Idx;ETF (ARCX:VOO)",
