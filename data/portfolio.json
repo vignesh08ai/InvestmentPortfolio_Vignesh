@@ -138,33 +138,25 @@
       "name": "ICICI Prudential Business Cycle Fund-Growth",
       "schemeCode": "148653",
       "owner": "Mahesh",
-      "units": 16634.38,
-      "purchaseNAV": 21.731,
-      "invested": 361482
+      "units": 17118.1,
+      "purchaseNAV": 21.8471,
+      "invested": 373981.38
     },
     {
       "name": "ICICI Prudential Manufacturing Fund-Growth",
       "schemeCode": "145077",
       "owner": "Mahesh",
-      "units": 3328.21,
-      "purchaseNAV": 34.251,
-      "invested": 113994.5207,
-      "currentNAV": 36.44,
-      "currentValue": 121013.7156,
-      "gainLoss": 7019.1949,
-      "returnPct": 6.16
+      "units": 3463.66,
+      "purchaseNAV": 34.355,
+      "invested": 118994.05
     },
     {
       "name": "Invesco India Mid cap fund",
       "schemeCode": "105503",
       "owner": "Mahesh",
-      "units": 207.95,
-      "purchaseNAV": 180.3246,
-      "invested": 37498.5006,
-      "currentNAV": 181.72,
-      "currentValue": 37609.837,
-      "gainLoss": 111.3364,
-      "returnPct": 0.3
+      "units": 276.24,
+      "purchaseNAV": 180.9937,
+      "invested": 49997.52
     },
     {
       "name": "Nippon India Power and Infra Fund Growth (SIP)",
@@ -198,9 +190,9 @@
       "name": "SBI Large & Midcap-Direct-Div",
       "schemeCode": "103024",
       "owner": "Mahesh",
-      "units": 539.8,
-      "purchaseNAV": 555.7336,
-      "invested": 299985
+      "units": 554.95,
+      "purchaseNAV": 558.584,
+      "invested": 309984.5
     },
     {
       "name": "Tata Banking and Financial Services Fund Growth (SIP)",
