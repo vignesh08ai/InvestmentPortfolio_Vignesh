@@ -464,6 +464,14 @@
       "currentValue": 17590.0588,
       "gainLoss": 93.0288,
       "returnPct": 0.5317
+    },
+    {
+      "name": "new",
+      "schemeCode": "",
+      "owner": "Mahesh",
+      "units": 10,
+      "purchaseNAV": 10,
+      "invested": 1000
     }
   ],
   "stocks": [
