@@ -683,9 +683,9 @@
       "name": "Microsoft Corporation",
       "symbol": "MSFT",
       "exchange": "NASDAQ",
-      "units": 0.019575,
-      "avgPrice": 408.18,
-      "invested": 7.99
+      "units": 0.032086,
+      "avgPrice": 404.54,
+      "invested": 12.98
     },
     {
       "name": "AMAZON.COM, INC. (XNAS:AMZN)",
@@ -693,7 +693,7 @@
       "exchange": "NASDAQ",
       "units": 0.119297,
       "avgPrice": 208.97,
-      "invested": 9.98
+      "invested": 24.93
     },
     {
       "name": "Invesco QQQ ETF (NASDAQ 100)",
@@ -715,9 +715,9 @@
       "name": "Oracle",
       "symbol": "ORCL",
       "exchange": "NASDAQ",
-      "units": 0.068032,
-      "avgPrice": 146.7,
-      "invested": 9.98
+      "units": 0.101151,
+      "avgPrice": 148,
+      "invested": 14.97
     },
     {
       "name": "TATA MOTORS PASSENGER VEHICLES LIMITED",
