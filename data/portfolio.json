@@ -311,9 +311,9 @@
       "name": "Kotak Large & Midcap Fund",
       "schemeCode": "120158",
       "owner": "Family",
-      "units": 123.304,
+      "units": 122.304,
       "purchaseNAV": 385.91,
-      "invested": 47198.337
+      "invested": 47198.38
     },
     {
       "name": "Mirae Asset ELSS Tax Saver Fund",
@@ -365,15 +365,10 @@
     {
       "name": "ICICI PRUDENTIAL MULTI ASSET FUND",
       "schemeCode": "120334",
-      "folioNumber": "",
       "owner": "Family",
-      "units": 18.801,
-      "purchaseNAV": 904.17,
-      "invested": 16999.3002,
-      "currentNAV": 908.81,
-      "currentValue": 17086.5368,
-      "gainLoss": 87.2366,
-      "returnPct": 0.5132
+      "units": 29.819,
+      "purchaseNAV": 905.41,
+      "invested": 26998.47
     },
     {
       "name": "Mirae Asset ELSS Tax Saver Fund",
